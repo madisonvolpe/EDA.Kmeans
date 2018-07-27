@@ -1,2 +1,13 @@
 # NYC_Parks_Crime_Statistics-
-An exploratory analysis of Crimes committed in NYC Parks. Also will examine clustering (k-means). 
+
+Backgound
+  
+Data Cleaning and Exploration with GGPlot2 
+
+Map Visualizations with GG Map
+
+Clustering 
+
+Conclusions
+
+Further Research and Suggestions 
