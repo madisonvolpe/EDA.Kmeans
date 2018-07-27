@@ -1,11 +1,11 @@
-##Backgound
+## Backgound
   
-##Data Cleaning and Exploration with GGPlot2 
+## Data Cleaning and Exploration with GGPlot2 
 
-##Map Visualizations with GG Map
+## Map Visualizations with GG Map
 
-##Clustering 
+## Clustering 
 
-##Conclusions
+## Conclusions
 
-##Further Research and Suggestions 
+## Further Research and Suggestions 
