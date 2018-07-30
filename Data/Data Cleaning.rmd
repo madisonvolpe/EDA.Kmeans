@@ -1,4 +1,4 @@
-# Reading in data 
+# Reading in Data 
 
 ```{r}
 ### 2015
@@ -56,7 +56,7 @@ Qfour17$Quarter <- rep("Q4", nrow(Qfour17))
 Qfour17$Year <- rep(2017, nrow(Qfour17))
 ```
 
-# Merging twelve datasets into one
+# Merging Datasets into One Dataframe
 
 ```{r}
 ### give generic column names 
