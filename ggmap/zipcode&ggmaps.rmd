@@ -1,4 +1,6 @@
-# Reading in Data from Socrata 
+# Setup 
+
+#### Reading in Data from Socrata 
 
 ```{r echo=TRUE}
 #install.packages("RSocrata")
@@ -7,7 +9,7 @@ token <-  "kQZdHWZoaGCuyRTdOGcpm9hqs"
 Parks <- read.socrata("https://data.cityofnewyork.us/resource/6d8r-c25g.json", app_token = token)
 ```
 
-# Initial Cleaning of Dataset 
+#### Initial Cleaning of Dataset 
 
 ```{r include=FALSE}
 str(Parks)
@@ -28,7 +30,7 @@ ParksZip$zipcode <- gsub (",\\d{5}", " ", ParksZip$zipcode)
 #now all parks have one zipcode, so I will just trim ws of zipcodes, bc they are funky 
 ParksZip$zipcode <- trimws(ParksZip$zipcode)
 ```
-### Merging Zipcodes Obtained from the Zipcode Package with Crime Dataset (Merged dataset)
+#### Merging Zipcodes Obtained from the Zipcode Package with Crime Dataset (Merged dataset)
 
 ```{r echo=TRUE}
 Crime$ZipCode <- ParksZip$zipcode[match(Crime$PARK, ParksZip$propname)]#okay initially this did not work because...the two datasets are in different cases 
@@ -39,13 +41,13 @@ ParksZip$propname <- tolower(ParksZip$propname)
 Crime$ZipCode <- ParksZip$zipcode[match(Crime$PARK, ParksZip$propname)]#now it worked...obviously, there are still some missing values because not all parks were in the API 
 ``` 
 
-### Using Parks that Did Not Have NA Zipcodes 
+#### Using Parks that Did Not Have NA Zipcodes 
 
 ```{r echo=TRUE}
 ZipMap <- subset(Crime, (!is.na(Crime[,15])))
 ```
 
-### Organizing Dataset so that Each Park has a Total for Each Year 
+#### Organizing Dataset so that Each Park has a Total for Each Year 
 
 ```{r echo=TRUE}
 ZipMapYear <- ZipMap%>%
@@ -55,7 +57,7 @@ ZipMapYear <- ZipMap%>%
 ZipMapYear$ZipCode <- ParksZip$zipcode[match(ZipMapYear$PARK, ParksZip$propname)]
 ```
 
-### Using ZipCode Package to get Coordinates 
+#### Using ZipCode Package to get Coordinates 
 
 ```{r echo=TRUE}
 #install.packages("zipcode")
@@ -66,7 +68,7 @@ ZipMapYear$Latitude <- zipcode$latitude[match(ZipMapYear$ZipCode, zipcode$zip)]
 ZipMapYear$Longitude <- zipcode$longitude[match(ZipMapYear$ZipCode, zipcode$zip)]
 ```
 
-### 2015 Map 
+#### 2015 Map 
 
 ```{r echo=TRUE}
 ZipMap15 <- ZipMapYear %>%
@@ -80,7 +82,7 @@ ggmap(map)+geom_point(aes(x=Longitude, y=Latitude, color=(TotalCrimes)), data=Zi
   ggtitle("Total Park Crimes in 2015")
 ```
 
-### 2016 Map
+#### 2016 Map
 
 ```{r echo=TRUE}
 ZipMap16 <- ZipMapYear %>%
@@ -93,7 +95,7 @@ ggmap(map)+geom_point(aes(x=Longitude, y=Latitude, color=(TotalCrimes)), data=Zi
   ggtitle("Total Park Crimes in 2016")
 ```
 
-### 2017 Map 
+#### 2017 Map 
 
 ```{r echo=TRUE}
 ZipMap17 <- ZipMapYear %>%
