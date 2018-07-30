@@ -31,7 +31,7 @@ ggplot(TotCrimesYearLongb, aes(fill=Crime_Type, y=Amount, x = Year))+
   labs(y = "Number of Crimes")
 ```
 
-#Total Crimes by Borough 
+# Total Crimes by Borough 
 
 ```{r}
 TotCrimesBorough <- Crime %>%
@@ -41,7 +41,7 @@ TotCrimesBorough <- Crime %>%
 print(xtable(TotCrimesBorough))
 ```
 
-###Grouped Barchart 
+### Grouped Barchart 
 
 ```{r echo=TRUE}
 #from wide to long--easier to make ggplot 
@@ -56,7 +56,7 @@ ggplot(TotBoroughLong, aes(y=Amount, x = Crime_Type, fill=Crime_Type))+
       theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
   ```
-###Grouped Barchart without Total 
+### Grouped Barchart without Total 
 
 ```{r echo=TRUE}
 #subsetting out GrandTotal 
