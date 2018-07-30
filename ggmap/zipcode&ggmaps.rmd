@@ -1,4 +1,4 @@
-#Reading in Data from Socrata 
+# Reading in Data from Socrata 
 
 ```{r echo=TRUE}
 #install.packages("RSocrata")
@@ -7,7 +7,7 @@ token <-  "kQZdHWZoaGCuyRTdOGcpm9hqs"
 Parks <- read.socrata("https://data.cityofnewyork.us/resource/6d8r-c25g.json", app_token = token)
 ```
 
-#Initial Cleaning of Dataset 
+# Initial Cleaning of Dataset 
 
 ```{r include=FALSE}
 str(Parks)
