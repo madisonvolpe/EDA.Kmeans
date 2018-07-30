@@ -1,0 +1,107 @@
+#Reading in Data from Socrata 
+
+```{r echo=TRUE}
+#install.packages("RSocrata")
+library(RSocrata)
+token <-  "kQZdHWZoaGCuyRTdOGcpm9hqs"
+Parks <- read.socrata("https://data.cityofnewyork.us/resource/6d8r-c25g.json", app_token = token)
+```
+
+#Initial Cleaning of Dataset 
+
+```{r include=FALSE}
+str(Parks)
+ParksNew <- Parks[-c(3,4,5,6,7,8,9,10,11,14,19,21)]
+str(ParksNew)
+```
+
+# Zip Code Maps for Parks from NYC OPEN Data's API on Socrata 
+
+```{r echo=TRUE}
+ParksZip <- ParksNew[-c(1,2,3,5,6,7,8)]##just keeping variables to Proper Names and ZipCode
+
+#Some parks had multiple zip codes will use regular expression to just keep first zipcode, I know this isnt the best way, but this is a "rough" project 
+
+ParksZip$zipcode <- gsub(",\\s\\d{5}", " ", ParksZip$zipcode)
+ParksZip$zipcode <- gsub (",\\d{5}", " ", ParksZip$zipcode)
+
+#now all parks have one zipcode, so I will just trim ws of zipcodes, bc they are funky 
+ParksZip$zipcode <- trimws(ParksZip$zipcode)
+```
+### Merging Zipcodes Obtained from the Zipcode Package with Crime Dataset (Merged dataset)
+
+```{r echo=TRUE}
+Crime$ZipCode <- ParksZip$zipcode[match(Crime$PARK, ParksZip$propname)]#okay initially this did not work because...the two datasets are in different cases 
+
+Crime$PARK <- tolower(Crime$PARK)
+ParksZip$propname <- tolower(ParksZip$propname)
+
+Crime$ZipCode <- ParksZip$zipcode[match(Crime$PARK, ParksZip$propname)]#now it worked...obviously, there are still some missing values because not all parks were in the API 
+``` 
+
+### Using Parks that Did Not Have NA Zipcodes 
+
+```{r echo=TRUE}
+ZipMap <- subset(Crime, (!is.na(Crime[,15])))
+```
+
+### Organizing Dataset so that Each Park has a Total for Each Year 
+
+```{r echo=TRUE}
+ZipMapYear <- ZipMap%>%
+  group_by(PARK,Year)%>%
+  summarise(TotalCrimes = sum(TOTAL)) 
+
+ZipMapYear$ZipCode <- ParksZip$zipcode[match(ZipMapYear$PARK, ParksZip$propname)]
+```
+
+### Using ZipCode Package to get Coordinates 
+
+```{r echo=TRUE}
+#install.packages("zipcode")
+library(zipcode) #loading zipcode package
+data("zipcode") #uploading zipcode data to R's global environment
+
+ZipMapYear$Latitude <- zipcode$latitude[match(ZipMapYear$ZipCode, zipcode$zip)]
+ZipMapYear$Longitude <- zipcode$longitude[match(ZipMapYear$ZipCode, zipcode$zip)]
+```
+
+### 2015 Map 
+
+```{r echo=TRUE}
+ZipMap15 <- ZipMapYear %>%
+  filter(Year == 2015)
+
+library(ggmap)
+map <- get_map(location = c(lon = -74.0060, lat = 40.7128), zoom = 10, maptype = "hybrid", source = "google", color = "color")
+
+ggmap(map)+geom_point(aes(x=Longitude, y=Latitude, color=(TotalCrimes)), data=ZipMap15, alpha=.5)+
+  scale_color_gradient(low="blue", high = "red")+ 
+  ggtitle("Total Park Crimes in 2015")
+```
+
+### 2016 Map
+
+```{r echo=TRUE}
+ZipMap16 <- ZipMapYear %>%
+  filter(Year == 2016)
+
+map <- get_map(location = c(lon = -74.0060, lat = 40.7128), zoom = 10, maptype = "hybrid", source = "google", color = "color")
+
+ggmap(map)+geom_point(aes(x=Longitude, y=Latitude, color=(TotalCrimes)), data=ZipMap16, alpha=.5)+
+  scale_color_gradient(low="blue", high = "red")+ 
+  ggtitle("Total Park Crimes in 2016")
+```
+
+### 2017 Map 
+
+```{r echo=TRUE}
+ZipMap17 <- ZipMapYear %>%
+  filter(Year == 2017)
+
+map <- get_map(location = c(lon = -74.0060, lat = 40.7128), zoom = 10, maptype = "hybrid", source = "google", color = "color")
+
+ggmap(map)+geom_point(aes(x=Longitude, y=Latitude, color=(TotalCrimes)), data=ZipMap17, alpha=.5)+
+  scale_color_gradient(low="blue", high = "red")+ 
+  ggtitle("Total Park Crimes in 2017")
+```
