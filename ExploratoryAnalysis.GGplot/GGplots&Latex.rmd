@@ -1,0 +1,76 @@
+# Total Crimes by Year and Crime Type
+
+```{r}
+TotCrimesYear <- Crime %>%
+  group_by(Year) %>%
+  summarise(GrandTotal = sum(TOTAL), MurderTotal = sum(MURDER), RapeTotal = sum(RAPE), FelonyTotal = sum(FELONY.ASSAULT), LarcenyTotal = sum(GRAND.LARCENY), RobberyTotal = sum(ROBBERY), LarcenyVehicleTotal = sum(GRAND.LARCENY.OF.MOTOR.VEHICLE), BurglaryTotal = sum(BURGLARY))
+```
+
+### Grouped Barchart
+
+```{r echo=TRUE}
+#from wide to long--easier to make ggplot 
+TotCrimesYearLong <- gather(TotCrimesYear, Crime_Type, Amount, GrandTotal:BurglaryTotal)
+#Grouped 
+ggplot(TotCrimesYearLong, aes(fill=Crime_Type, y=Amount, x = Year))+
+  geom_bar(position = "dodge", stat = "identity")+
+  geom_text(aes(label = Amount), position = position_dodge(.9), vjust = 0)+
+  ggtitle("Total Crimes by Year and Crime Type in NYC Parks") + 
+  labs(y = "Number of Crimes")
+```
+
+### Grouped Barchart without Total
+
+```{r echo=TRUE}
+#subset to remove GrandTotal 
+TotCrimesYearLongb <- TotCrimesYearLong[which(TotCrimesYearLong$Crime_Type != "GrandTotal"),]
+ggplot(TotCrimesYearLongb, aes(fill=Crime_Type, y=Amount, x = Year))+
+  geom_bar(position = "dodge", stat = "identity")+
+  geom_text(aes(label = Amount), position = position_dodge(.9), vjust = 0)+
+  ggtitle("Total Crimes by Year and Crime Type in NYC Parks") + 
+  labs(y = "Number of Crimes")
+```
+
+#Total Crimes by Borough 
+
+```{r}
+TotCrimesBorough <- Crime %>%
+  group_by(BOROUGH) %>%
+  summarise(GrandTotal = sum(TOTAL), MurderTotal = sum(MURDER), RapeTotal = sum(RAPE), FelonyTotal = sum(FELONY.ASSAULT), LarcenyTotal = sum(GRAND.LARCENY), RobberyTotal = sum(ROBBERY), LarcenyVehicleTotal = sum(GRAND.LARCENY.OF.MOTOR.VEHICLE), BurglaryTotal = sum(BURGLARY))
+
+print(xtable(TotCrimesBorough))
+```
+
+###Grouped Barchart 
+
+```{r echo=TRUE}
+#from wide to long--easier to make ggplot 
+TotBoroughLong <- gather(TotCrimesBorough, Crime_Type, Amount, GrandTotal:BurglaryTotal)
+#Grouped 
+ggplot(TotBoroughLong, aes(y=Amount, x = Crime_Type, fill=Crime_Type))+
+  geom_bar(position = "dodge", stat = "identity")+
+  geom_text(aes(label = Amount), position = position_dodge(.9), vjust = 0)+
+  facet_wrap(vars(TotBoroughLong$BOROUGH))+
+  ggtitle("Total Crimes by Borough and Crime Type in NYC Parks") + 
+  labs(y = "Number of Crimes", x = "Crime Type")+
+      theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+  ```
+###Grouped Barchart without Total 
+
+```{r echo=TRUE}
+#subsetting out GrandTotal 
+TotBoroughLongb <- TotBoroughLong[which(TotBoroughLong$Crime_Type != "GrandTotal"),]
+#Grouped
+ggplot(TotBoroughLongb, aes(fill=Crime_Type, y=Amount, x = Crime_Type))+
+  geom_bar(position = "dodge", stat = "identity")+
+  geom_text(aes(label = Amount), position = position_dodge(.9), vjust = 0)+
+  facet_wrap(vars(TotBoroughLongb$BOROUGH))+
+  ggtitle("Total Crimes by Borough and Crime Type in NYC Parks") + 
+  labs(y = "Number of Crimes", x = "Crime Type")+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+```
+
+
+
