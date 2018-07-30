@@ -1,0 +1,99 @@
+# Reading in data 
+
+```{r}
+### 2015
+Qone15 <- read.xlsx("Q12015.xlsx", sheet = 1, startRow = 5, colNames = TRUE)
+Qone15$Quarter <- rep("Q1", nrow(Qone15))
+Qone15$Year <- rep(2015, nrow(Qone15))
+
+Qtwo15 <- read.xlsx("Q22015.xlsx", sheet = 1, startRow = 5, colNames = TRUE)
+Qtwo15$Quarter <- rep("Q2", nrow(Qtwo15))
+Qtwo15$Year <- rep(2015, nrow(Qtwo15))
+
+Qthr15 <- read.xlsx("Q32015.xlsx", sheet = 1, startRow = 5, colNames = TRUE)
+Qthr15$Quarter <- rep("Q3", nrow(Qthr15))
+Qthr15$Year <- rep(2015, nrow(Qthr15))
+
+
+Qfour15 <- read.xlsx("Q42015.xlsx", sheet = 1, startRow = 4, colNames = TRUE)
+Qfour15$Quarter <- rep("Q4", nrow(Qfour15))
+Qfour15$Year <- rep(2015, nrow(Qfour15))
+
+
+### 2016 
+Qone16 <- read.xlsx("Q12016.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qone16$Quarter <- rep("Q1", nrow(Qone16))
+Qone16$Year <- rep(2016, nrow(Qone16))
+
+Qtwo16 <-read.xlsx("Q22016.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qtwo16$Quarter <- rep("Q2", nrow(Qone16))
+Qtwo16$Year <- rep(2016, nrow(Qtwo16))
+
+Qthr16 <- read.xlsx("Q32016.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qthr16$Quarter <- rep("Q3", nrow(Qthr16))
+Qthr16$Year <- rep(2016, nrow(Qthr16))
+
+Qfour16 <- read.xlsx("Q42016.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qfour16$Quarter <- rep("Q4", nrow(Qfour16))
+Qfour16$Year <- rep(2016, nrow(Qfour16))
+
+### 2017 
+
+Qone17 <- read.xlsx("Q12017.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qone17$Quarter <- rep("Q1",nrow(Qone17))
+Qone17$Year <- rep(2017, nrow(Qone17))
+
+Qtwo17 <-read.xlsx("Q22017.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qtwo17$Quarter <- rep("Q2", nrow(Qtwo17))
+Qtwo17$Year <- rep(2017, nrow(Qtwo17))
+
+Qthr17 <- read.xlsx("Q32017.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qthr17$Quarter <- rep("Q3", nrow(Qthr17))
+Qthr17$Year <- rep(2017, nrow(Qthr17))
+
+Qfour17 <- read.xlsx("Q42017.xlsx", sheet =1, startRow = 4, colNames = TRUE)
+Qfour17$Quarter <- rep("Q4", nrow(Qfour17))
+Qfour17$Year <- rep(2017, nrow(Qfour17))
+```
+
+# Merging twelve datasets into one
+
+```{r}
+### give generic column names 
+varNames <- names(Qone15)
+
+### create function to change column names of all tweleve dataframes 
+ChgNames<-function(dat){
+  names(dat) <- varNames
+  return(dat)
+}
+
+### assign dfs to list 
+dfs <- list(Qone15,Qtwo15,Qthr15,Qfour15, Qone16, Qtwo16, Qthr16, Qfour16, Qone17, Qtwo17, Qthr17, Qfour17)
+
+### lapply ChgNames function to dfs 
+dfs <- lapply(dfs, ChgNames)
+
+### unlist dfs  and merge as one dataframe 
+Crime<- as.data.frame(do.call(rbind, dfs))
+
+### view structure of crime 
+str(Crime)
+
+### making certain columns numeric
+num.cols <- c("SIZE.(ACRES)", "MURDER", "RAPE", "ROBBERY", "FELONY.ASSAULT", "BURGLARY", "GRAND.LARCENY", "GRAND.LARCENY.OF.MOTOR.VEHICLE", "TOTAL")
+Crime[num.cols] <- sapply(Crime[num.cols],as.numeric)
+
+### checking structure
+str(Crime)
+
+### remove NAs from dataset 
+for(i in 1:nrow(Crime)){
+  if(is.na(Crime$BOROUGH[i])==TRUE){
+    Crime <- Crime[-i,]
+  }
+}
+
+### check to see if NAs are gone
+anyNA(Crime)
+``` 
